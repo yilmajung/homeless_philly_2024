@@ -21,7 +21,7 @@ def main(config):
     "text_prompt: ", config["text_prompt"])
 
     # Set up HOME directory
-    HOME = '/gpuhome/wzj5097'
+    HOME = '/gpu02home/wzj5097'
 
     # #Install GroundingDINO and required packages
     # %cd {HOME}
@@ -98,7 +98,7 @@ def main(config):
     end_range = config["end_range"]
     
     for i in range(start_range, end_range):
-        temp_df = pd.read_csv('/gpuhome/wzj5097/GroundingDINO/df_mapillary/df_mapillary_{}.csv'.format(i)) #you should change the path
+        temp_df = pd.read_csv('/gpu02home/wzj5097/GroundingDINO/df_mapillary/df_mapillary_{}.csv'.format(i)) #you should change the path
         temp_df['num_tents'] = 0
         temp_df['confidence'] = 0
         temp_df['confidence'] = temp_df['confidence'].astype('object')
@@ -113,6 +113,10 @@ def main(config):
 
                 temp_df.loc[j, 'num_tents'] = len(temp_results)
                 temp_df.at[j, 'confidence'] = tuple(temp_results.cpu().tolist())
+
+                # Save images include potential tents
+                if temp_df['num_tents'][j]>0:
+                    urllib.request.urlretrieve(temp_df['image_url'][j], '/gpu02home/wzj5097/GroundingDINO/train_data_img/img_{}_df{}_row{}.jpg'.format(temp_df['image_id'][j],i,j)) #you should change the path
 
             except requests.exceptions.RequestException as err:
                 print(err)
@@ -137,12 +141,10 @@ def main(config):
                 print('ValueError')
 
         if (temp_df['num_tents']>0).any():
-            #temp_df.to_csv('/gpuhome/wzj5097/GroundingDINO/final_df_yes/df_mapillary_{}.csv'.format(i), index=False) #you should change the path
-            urllib.request.urlretrieve(temp_df['image_url'][j], '/gpuhome/wzj5097/GroundingDINO/train_data_img/img_{}.jpg'.format(temp_df['image_id'][j])) #you should change the path
+            temp_df.to_csv('/gpu02home/wzj5097/GroundingDINO/final_df_yes/df_mapillary_{}.csv'.format(i), index=False) #you should change the path
         
         else:
-            pass
-            #temp_df.to_csv('/gpuhome/wzj5097/GroundingDINO/final_df_no/df_mapillary_{}.csv'.format(i), index=False) #you should change the path
+            temp_df.to_csv('/gpu02home/wzj5097/GroundingDINO/final_df_no/df_mapillary_{}.csv'.format(i), index=False) #you should change the path
 
 if __name__=="__main__":
     with open('config.json', 'r') as file:
