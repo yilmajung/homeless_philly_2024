@@ -103,8 +103,8 @@ def create_bbox(w, lat_min, lon_min, lat_max, lon_max):
     return df_bbox[columns]
 
 
-# Create inner bounding boxes for Philadelphia
-df_bbox = create_bbox(w=.1, lat_min=39.861345, lon_min=-75.282768, lat_max=40.148053, lon_max=-74.949463)
+# Create inner bounding boxes for San Francisco 
+df_bbox = create_bbox(w=.1, lat_min=37.704744, lon_min=-122.511930, lat_max=37.837586, lon_max=-122.356061)
 
 # Extract Census Tract GEOID using latitude and longitude (center location of each bbox)
 df_bbox['center_lat'] = df_bbox['center_latlon'].str[0]
